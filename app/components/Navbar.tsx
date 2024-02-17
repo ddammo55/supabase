@@ -6,7 +6,7 @@ export default function Navbar() {
         <div>
             <nav className='border-b bg-background h-[10vh] flex items-center'>
                 <div className='container flex items-center justify-bitween'>
-                   <Link href="/">MarshalSaas</Link> 
+                   <Link href="/">MarshalSaassss</Link> 
                 </div>
             </nav>
         </div>
