@@ -6,6 +6,8 @@ import React from 'react';
 import prisma from "@/app/lib/db";
 import {getKindeServerSession} from "@kinde-oss/kinde-auth-nextjs/server";
 import { Button } from '@/components/ui/button';
+import SubmitButton from '@/app/components/Submitbutton';
+import { revalidatePath } from 'next/cache';
 
 async function getData(userId:string){
     const data = await prisma.user.findUnique({
@@ -27,20 +29,24 @@ export default async function SettingPage() {
     const user = await getUser();
     const data = await getData(user?.id as string);
 
-    async function postData(formData:FormData) {
-      "use server"  
-      const name = formData.get('name') as string;
-      const colorSchme  = formData.get('color') as string;
+    // 데이터를 서버에 전송하는 비동기 함수
+    async function postData(formData: FormData) {
+        "use server"  
+        
+        const name = formData.get('name') as string;
+        const colorSchme  = formData.get('color') as string;
 
-      await prisma.user.update({
-        where:{
-            id: user?.id, //아이디는 사용자와 동일하게
-        },
-        data: {
-            name: name ?? undefined,
-            colorSchme: colorSchme ?? undefined
-        },
-      })
+        await prisma.user.update({
+            where:{
+                    id: user?.id, // 아이디는 사용자와 동일하게
+            },
+            data: {
+                    name: name ?? undefined,
+                    colorSchme: colorSchme ?? undefined
+            },
+        })
+
+        revalidatePath('/',"layout");
     }
 
 
@@ -95,7 +101,7 @@ export default async function SettingPage() {
                     </CardContent>
 
                     <CardFooter>
-                        <Button type="submit">Save now</Button>
+                        <SubmitButton />
                     </CardFooter>
                 </form>
             </Card>
