@@ -3,6 +3,7 @@ import DashboardNav from '../components/DashboardNav';
 import {getKindeServerSession} from "@kinde-oss/kinde-auth-nextjs/server";
 import { redirect } from 'next/navigation';
 import prisma from '../lib/db';
+import { stripe } from '../lib/stripe';
 
 async function getData({
     email,
@@ -39,6 +40,23 @@ async function getData({
         });
       }
 
+    // 유저의 stripeCustomerId가 없는 경우
+    if (!user?.stripeCustomerId) {
+      const data = await stripe.customers.create({
+        email : email,
+      });
+
+      // stripeCustomerId 업데이트
+      await prisma.user.update({
+        where: {
+          id: id,
+        },
+        data: {
+          stripeCustomerId: data.id,
+        },
+      });
+    }
+  
 }
 
 export default async function DashboardLayout({children} : {children : ReactNode}) {
