@@ -1,12 +1,12 @@
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { CheckCircle2 } from 'lucide-react';
 import React from 'react';
 import prisma from '@/app/lib/db';
 import {getKindeServerSession} from "@kinde-oss/kinde-auth-nextjs/server";
-import { getStripeSession } from '@/app/lib/stripe';
+import { getStripeSession, stripe } from '@/app/lib/stripe';
 import { redirect } from 'next/navigation';
-import { StripeSubscriptionCreationButton } from '@/app/components/SubmitButton';
+import { StripePortal, StripeSubscriptionCreationButton } from '@/app/components/SubmitButton';
 
 const  featureItems = [
     {name: "Lorem Ipsum something"},
@@ -69,6 +69,50 @@ export default async function BillingPage() {
 
         return redirect(subscriptionUrl);// 구독 URL로 리디렉션합니다.
     }
+
+  async function createCustomerPortal() {// 고객 포털 생성
+    "use server";
+    const session = await stripe.billingPortal.sessions.create({// 스트라이프 빌링 포털 세션을 생성합니다.
+      customer: data?.user.stripeCustomerId as string,// 고객 ID를 가져옵니다.
+      return_url:// 리디렉션 URL을 가져옵니다.
+        process.env.NODE_ENV === "production"// 프로덕션 URL을 가져옵니다.
+          ? (process.env.PRODUCTION_URL as string)// 프로덕션 URL을 가져옵니다.
+          : "http://localhost:3000/dashboard",// 로컬 URL을 가져옵니다.
+    });
+
+    return redirect(session.url);// 세션 URL로 리디렉션합니다.
+  }
+
+    if (data?.status === "active") {
+        return (
+          <div className="grid items-start gap-8">
+            <div className="flex items-center justify-between px-2">
+              <div className="grid gap-1">
+                <h1 className="text-3xl md:text-4xl ">Subscription</h1>
+                <p className="text-lg text-muted-foreground">
+                  Settings reagding your subscription
+                </p>
+              </div>
+            </div>
+    
+            <Card className="w-full lg:w-2/3">
+              <CardHeader>
+                <CardTitle>Edit Subscription</CardTitle>
+                <CardDescription>
+                  Click on the button below, this will give you the opportunity to
+                  change your payment details and view your statement at the same
+                  time.
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <form action={createCustomerPortal}>
+                  <StripePortal />
+                </form>
+              </CardContent>
+            </Card>
+          </div>
+        );
+      }
 
     return (
         <div className='max-w-md mx-auto space-x-4'>
