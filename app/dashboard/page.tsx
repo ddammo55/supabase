@@ -43,6 +43,13 @@ export default async function Dashboard() {
                     </div>
 
                     <h2 className='mt-6 text-xl font-semibold'>You dont have any notes created</h2>
+                    <p className='mb-8 mt-2 text-center text-sm leading-6 text-muted-foreground max-w-sm mx-auto'>
+                        You currently dont have any notes. please create some so that you can see them right here.
+                    </p>
+
+                    <Button asChild>
+                        <Link href="/dashboard/new">Create a new Note</Link>
+                    </Button>
                 </div>
             ):(
                 <div></div>
