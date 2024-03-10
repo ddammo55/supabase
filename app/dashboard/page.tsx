@@ -9,7 +9,7 @@ import { Card } from "@/components/ui/card";
 import { revalidatePath, unstable_noStore as noStore } from "next/cache";
 import { TrashDelete } from "../components/SubmitButton";
 
-async function getData(userId: string) {
+async function getData(userId: string) {// 사용자 ID를 매개변수로 받아와서 해당 사용자의 노트 데이터를 가져오는 비동기 함수입니다.
   noStore();
   const data = await prisma.user.findUnique({
     where: {
